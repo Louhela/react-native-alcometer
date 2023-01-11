@@ -3,9 +3,14 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'stretch',
+        // alignItems: 'stretch',
         justifyContent: 'space-evenly',
+        // alignItems: 'center',
         margin: 10
+    },
+    title:{
+        fontSize: 32,
+        textAlign: "center"
     },
     textInput:{
         padding: 5,
@@ -13,6 +18,7 @@ export default StyleSheet.create({
         marginBottom: 10
     },
     label:{
+        // flex: 1,
         fontSize: 18,
         fontWeight: "bold"
     },

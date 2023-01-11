@@ -8,80 +8,85 @@ import NumericInput from 'react-native-numeric-input'
 export default function App() {
   return (
     <View style={Styles.container}>
-      <SumView />
-      <GenderSelector />
+      <AlcholLevel />
     </View>
   );
 }
 
-function GenderSelector(){
-  const genders = ["Male", "Female", "Dog"];
-  const [gender, setGender] = useState("Male")
-  
-  return( 
-  <View>
-    <Text>Gender: {gender}</Text>
-    <View>
-      {genders.map(genderInput => (
-          <View key={genderInput}>
-            <Text>{genderInput}</Text>
-              <TouchableOpacity
-                style={Styles.radio}
-                onPress={() => setGender(genderInput)}>
-                {gender === genderInput && <View style={Styles.radioInner} />}
-              </TouchableOpacity>
-          </View>
-      ))}
-    </View>
-  </View>
-  )
-}
-
-
-
-function SumView(){
-  const genders = [{label:"Male", value: 'male'},{label:"Female", value: 'female'}];
-  
+function AlcholLevel(){
+  const genders = ["Male", "Female"];
 
   const [weight, setWeight] = useState(0);
   const [bottles, setBottles] = useState(0);
   const [hours, setHours] = useState(0);
-  const [gender, setGender] = useState(genders[0].value)
+  const [gender, setGender] = useState("Male")
+  const [result, setResult] = useState(0)
+  
+
+function CalculateAlcholLevel(){
+  // Calculating the blood alcohol level
+  var liters = bottles * 0.33
+  var grams = liters * 8 * 4.5
+  var burning = weight / 10
+  var gramsLeft = grams - burning * hours
+
+  // If Male is selected as gender the multiplier will be 0.7 else (when female is selected as gender) the multiplier will be 0.6
+  var multiplier = gender == "Male" ? 0.7 : 0.6
+  
+
+  // The result of the calculations rounded to 2 decimals
+  var calculatedAlcoholLevel = (gramsLeft / (weight * multiplier)).toPrecision(2)
+  
+  // Setting the result. If calculated value is lower than 0 then the result will be set at 0.
+  setResult(calculatedAlcoholLevel > 0 ? calculatedAlcoholLevel : 0)
+
+}
 
   return (
-    <View>
+    <View style={Styles.container}>
+      <Text style={Styles.title}>Alcometer</Text>
+      <View>
       <Text style={Styles.label}>Weight:</Text>
       <TextInput 
         keyboardType='number-pad' 
         value={weight}
         style={Styles.textInput}
+        onChangeText={value => setWeight(value)}
       />
+      </View>
+      <View>
       <Text style={Styles.label}>Bottles</Text>
         <NumericInput
         minValue={0}
-        onChange={value => console.log(value)} />
+        onChange={value => setBottles(value)} />
 
       <Text style={Styles.label}>Hours</Text>
         <NumericInput
         minValue={0}
-        onChange={value => console.log(value)} />
-{/* 
-      <Text style={Styles.label}>Gender</Text>
-            <RadioForm
-                radio_props={genders} 
-                initial={0}
-                onPress={value => setGender(value)}
-            /> */}
-      {/* <TextInput 
-        keyboardType='number-pad' 
-        value={bottles}
-        style={Styles.textInput}
-        
-      /> */}
+        onChange={value => setHours(value)} />
+      </View>
 
+      <View>
+        <Text>Gender: {gender}</Text>
+        <View>
+          {genders.map(genderInput => (
+              <View key={genderInput}>
+                <Text>{genderInput}</Text>
+                  <TouchableOpacity
+                    style={Styles.radio}
+                    onPress={() => setGender(genderInput)}>
+                    {gender === genderInput && <View style={Styles.radioInner} />}
+                  </TouchableOpacity>
+              </View>
+          ))}
+        </View>
+      </View>
 
-      <Button title='Sum' />
-      <Text>Sum is 10</Text>
+      
+      <Button title='CALCULATE' 
+      onPress={CalculateAlcholLevel}/>
+      <Text>Per ml: <Text style={Styles.result}>{result}</Text></Text>
+
     </View>
   );
 }
