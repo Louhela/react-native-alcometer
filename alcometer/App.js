@@ -1,19 +1,44 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from 'react-native';
-import Styles from './styles/Styles.js';
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Switch, ScrollView, Alert, Pressable } from 'react-native';
+// import Styles from './styles/Styles.js';
+
+import { darkStyle, lightStyle } from './styles/Styles.js';
 import NumericInput from 'react-native-numeric-input'
 
 
 export default function App() {
+  const [isDark, setisDark] = useState(false)
+  let Styles = isDark ? darkStyle : lightStyle;
   return (
-    <View style={Styles.container}>
-      <AlcholLevel />
-    </View>
+    <ScrollView contentContainerStyle={Styles.container}>
+      <Switch
+          style={Styles.switch}
+          value={isDark}
+          onValueChange={newValue => setisDark(newValue)}/>
+      <AlchoholLevel
+      theme = {Styles}/>
+    </ScrollView>
   );
 }
 
-function AlcholLevel(){
+function AlchoholLevel(props){
+
+  const weightAlert = (title, message) => {
+    Alert.alert(
+      title,
+      message,
+      [
+         {
+          text: "Ok"
+         }
+      ]
+    );
+  } 
+
+  let Styles = props.theme;
+
+
   const genders = ["Male", "Female"];
 
   const [weight, setWeight] = useState(0);
@@ -24,6 +49,12 @@ function AlcholLevel(){
   
 
 function CalculateAlcholLevel(){
+  if (weight == 0) {
+    let title = "Error"
+    let message = "Please input weight"
+    weightAlert(title, message)
+    return
+  }
   // Calculating the blood alcohol level
   var liters = bottles * 0.33
   var grams = liters * 8 * 4.5
@@ -58,20 +89,35 @@ function CalculateAlcholLevel(){
       <Text style={Styles.label}>Bottles</Text>
         <NumericInput
         minValue={0}
+
+        rounded
+        textColor = {props.theme == darkStyle ? '#FFF' : '#000'}
+        borderColor = "#00000000"
+        iconStyle={{ color: 'white' }} 
+        rightButtonBackgroundColor= {props.theme == darkStyle ? '#2C2B3C' : '#CD5334'} 
+        leftButtonBackgroundColor= {props.theme == darkStyle ? '#2C2B3C' : '#CD5334'} 
+
         onChange={value => setBottles(value)} />
 
       <Text style={Styles.label}>Hours</Text>
         <NumericInput
         minValue={0}
+        
+        rounded
+        textColor = {props.theme == darkStyle ? '#FFF' : '#000'}
+        borderColor = "#00000000"
+        iconStyle={{ color: 'white' }} 
+        rightButtonBackgroundColor= {props.theme == darkStyle ? '#2C2B3C' : '#CD5334'} 
+        leftButtonBackgroundColor= {props.theme == darkStyle ? '#2C2B3C' : '#CD5334'} 
+
         onChange={value => setHours(value)} />
       </View>
 
       <View>
-        <Text>Gender: {gender}</Text>
         <View>
           {genders.map(genderInput => (
               <View key={genderInput}>
-                <Text>{genderInput}</Text>
+                <Text style={Styles.label}>{genderInput}</Text>
                   <TouchableOpacity
                     style={Styles.radio}
                     onPress={() => setGender(genderInput)}>
@@ -83,9 +129,12 @@ function CalculateAlcholLevel(){
       </View>
 
       
-      <Button title='CALCULATE' 
-      onPress={CalculateAlcholLevel}/>
-      <Text>Per ml: <Text style={Styles.result}>{result}</Text></Text>
+      <Pressable style = {Styles.button} onPress={CalculateAlcholLevel}>
+        <Text style={Styles.buttonText}>CALCULATE</Text>
+      </Pressable>
+      <Text style={ result == 0 ? Styles.result.green 
+                    : result >= 0.5 ?  Styles.result.red
+                    : Styles.result.yellow}>{result}</Text>
 
     </View>
   );
