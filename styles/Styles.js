@@ -24,15 +24,15 @@ const darkStyle = StyleSheet.create({
     },
     textInput:{
         padding: 10,
-        borderWidth:2,
+        borderWidth: 2,
         marginBottom: 10,
+        fontSize: 25,
         borderTopColor: "#00000000",
         borderLeftColor: "#00000000",
         borderRightColor: "#00000000",
         color: lightContent
     },
     label:{
-        // flex: 1,
         fontSize: 18,
         fontWeight: "bold",
         color: lightContent
